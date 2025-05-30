@@ -1,6 +1,18 @@
+from string import Template
 from google import genai
 from google.genai import types
 from mca.interfaces import Summarizer
+
+PROMPT_TEMPLATE = """
+Summarize the recent conversation in natural language.
+Focus on what changed, what was said, and what the character should know — but do not include direct quotes, names, or any dialogue formatting.
+Avoid listing who said what.
+Just explain what’s going on in plain terms.
+
+---
+            
+$conversation
+""".strip()
 
 
 class GeminiSummarizer(Summarizer):
@@ -22,7 +34,7 @@ class GeminiSummarizer(Summarizer):
 
         conversation = "\n".join([f"{role}: {content}" for role, content in messages])
 
-        prompt = f"Please summarize the following conversation concisely.\n\n---\n\n{conversation}"
+        prompt = Template(PROMPT_TEMPLATE).substitute(conversation=conversation)
 
         response = self.client.models.generate_content(
             model=self.model,
