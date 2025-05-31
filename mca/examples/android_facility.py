@@ -6,7 +6,7 @@ from mca.mc import MasterOfCeremony
 from mca.interfaces import Message
 from mca.participant import Participant
 from mca.selectors import create_gemini_selector
-from mca.summarizers.gemini import GeminiSummarizer
+from mca.summarizers import create_gemini_summarizer
 from mca.adapters.pydantic_ai import PydanticAiAdapter
 
 # Load environment variables from .env file
@@ -18,7 +18,7 @@ lite_model = "gemini-2.0-flash-lite"
 
 # Configure components
 selector = create_gemini_selector(lite_model)
-summarizer = GeminiSummarizer(lite_model, genai.Client())
+summarizer = create_gemini_summarizer(lite_model)
 
 # Shared scene description and per-agent personas (placeholders)
 shared_system_prompt = """
