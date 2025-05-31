@@ -77,7 +77,7 @@ color_code = {"Eliot": "\033[96m", "Rhea": "\033[95m", "Kael": "\033[92m"}
 
 
 def out_line(name: str, content: str):
-    print(f"{color_code[name]}💬 {name}:{reset} {content}")
+    print(f"{color_code[name]}💬 {name}:{reset} {content.strip()}")
 
 
 def clear(timeline: list[(str, str)]):

@@ -6,17 +6,11 @@ from mca.participant import Participant
 
 
 class MasterOfCeremony:
-    def __init__(
-        self,
-        participants: list[Participant],
-        selector: Selector,
-        max_context_window_size: int = 10,
-    ):
+    def __init__(self, participants: list[Participant], selector: Selector):
         self.participants = {p.name: p for p in participants}
         self.selector = selector
         self.timeline: list[tuple[str, str]] = []
         self.last_participant_name: Optional[str] = None
-        self.max_context_window_size = max_context_window_size
 
     def add_message(self, participant_name: str, message: str):
         self.timeline.append((participant_name, message))
@@ -51,14 +45,8 @@ class MasterOfCeremony:
             if name != self.last_participant_name
         ]
 
-        last_messages = (
-            self.timeline[-self.max_context_window_size :]
-            if self.max_context_window_size > 0
-            else []
-        )
-
         try:
-            participant_name = self.selector(available_participant_names, last_messages)
+            participant_name = self.selector(available_participant_names, self.timeline)
 
             if participant_name in available_participant_names:
                 return participant_name
