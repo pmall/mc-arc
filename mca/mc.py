@@ -30,8 +30,14 @@ class MasterOfCeremony:
             try:
                 yield generator
             finally:
-                # Add the complete response to messages
                 self.add_message(participant.name, response.get_full_response())
+
+    def _available_participant_names(self) -> str:
+        return [
+            name
+            for name in self.participants.keys()
+            if name != self.last_participant_name
+        ]
 
     def _select_participant(self) -> Participant:
         participant_name = self._select_participant_name()
@@ -39,11 +45,7 @@ class MasterOfCeremony:
         return self.participants[participant_name]
 
     def _select_participant_name(self) -> str:
-        available_participant_names = [
-            name
-            for name in self.participants.keys()
-            if name != self.last_participant_name
-        ]
+        available_participant_names = self._available_participant_names()
 
         try:
             participant_name = self.selector(available_participant_names, self.timeline)
