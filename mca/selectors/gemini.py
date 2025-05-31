@@ -1,29 +1,12 @@
 from enum import Enum
-from string import Template
-from google import genai
+from typing import Optional
 from google.genai import types
-from mca.prompts import SELECTOR_PROMPT_TEMPLATE
-from mca.interfaces import Message, Selector
+from .base import AbstractParticipantSelector
 
 
-class GeminiParticipantSelector(Selector):
-    def __init__(self, model: str, client: genai.Client, max_messages: int = 10):
-        self.model = model
-        self.client = client
-        self.max_messages = max_messages
-        self.template = Template(SELECTOR_PROMPT_TEMPLATE)
-
-    def __call__(self, participants: list[str], messages: list[Message]) -> str:
+class GeminiParticipantSelector(AbstractParticipantSelector):
+    def _select_participant(self, participants, prompt):
         OptionalParticipantEnum = Enum("ParticipantEnum", {p: p for p in participants})
-
-        buffer = messages[-self.max_messages :] if self.max_messages > 0 else []
-
-        participants = ", ".join(participants)
-        conversation = "\n".join([f"- {message}" for message in buffer])
-
-        prompt = self.template.substitute(
-            participants=participants, conversation=conversation
-        )
 
         response = self.client.models.generate_content(
             model=self.model,
@@ -35,3 +18,20 @@ class GeminiParticipantSelector(Selector):
         )
 
         return response.text
+
+
+def create_gemini_selector(
+    model: str = "gemini-2.0-flash",
+    api_key: Optional[str] = None,
+    max_messages: int = 10,
+):
+    """Factory function that creates client and selector together."""
+    try:
+        from google import genai
+    except ImportError:
+        raise ImportError(
+            "google-generativeai package not installed. Install with: pip install google-generativeai"
+        )
+
+    client = genai.Client(api_key=api_key)
+    return GeminiParticipantSelector(model, client, max_messages)

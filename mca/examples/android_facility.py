@@ -5,7 +5,7 @@ from pydantic_ai import Agent
 from mca.mc import MasterOfCeremony
 from mca.interfaces import Message
 from mca.participant import Participant
-from mca.selectors.gemini import GeminiParticipantSelector
+from mca.selectors import create_gemini_selector
 from mca.summarizers.gemini import GeminiSummarizer
 from mca.adapters.pydantic_ai import PydanticAiAdapter
 
@@ -13,13 +13,12 @@ from mca.adapters.pydantic_ai import PydanticAiAdapter
 load_dotenv()
 
 # Configure providers
-client = genai.Client()
 model = "gemini-2.0-flash"
 lite_model = "gemini-2.0-flash-lite"
 
 # Configure components
-selector = GeminiParticipantSelector(lite_model, client)
-summarizer = GeminiSummarizer(lite_model, client)
+selector = create_gemini_selector(lite_model)
+summarizer = GeminiSummarizer(lite_model, genai.Client())
 
 # Shared scene description and per-agent personas (placeholders)
 shared_system_prompt = """
