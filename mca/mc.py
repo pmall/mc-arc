@@ -27,32 +27,17 @@ class MasterOfCeremony:
                 participant.receive_message(participant_name, message)
 
     @contextlib.asynccontextmanager
-    async def step(self):
-        response = ""
-
+    async def step(self, cumulative: bool = False):
         participant = self._select_participant()
 
-        stream = participant.reply()
+        response = participant.reply(cumulative)
 
-        async def chunk_generator():
-            nonlocal response
-            async for chunk in stream:
-                response = chunk.strip()
-                yield (participant.name, response)
-
-        generator = chunk_generator()
-
-        try:
-            yield generator
-        finally:
-            # Ensure the stream is fully consumed
+        async with response as generator:
             try:
-                async for _ in generator:
-                    pass
-            except StopAsyncIteration:
-                pass
-
-            self.add_message(participant.name, response)
+                yield generator
+            finally:
+                # Add the complete response to messages
+                self.add_message(participant.name, response.get_full_response())
 
     def _select_participant(self) -> Participant:
         participant_name = self._select_participant_name()
