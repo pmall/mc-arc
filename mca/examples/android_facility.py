@@ -77,7 +77,7 @@ color_code = {"Eliot": "\033[96m", "Rhea": "\033[95m", "Kael": "\033[92m"}
 
 
 def out_line(name: str, content: str):
-    print(f"{color_code[name]}💬 {name}:{reset} {content}▊")
+    print(f"{color_code[name]}💬 {name}:{reset} {content}")
 
 
 def clear(timeline: list[(str, str)]):
@@ -90,12 +90,11 @@ async def main():
     while True:
         async with mc.step() as stream:
             output = ""
-            async for name, message in stream:
-                for char in list(message[len(output) :]):
+            async for name, chunk in stream:
+                for char in list(chunk):
                     output += char
-
                     clear(mc.timeline)
-                    out_line(name, output)
+                    out_line(name, output.strip())
 
                     await asyncio.sleep(0.01)
 

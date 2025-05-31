@@ -14,6 +14,8 @@ class PydanticAiAdapter(AgentAdapter):
             return result.data
 
     async def _stream_response(self, message_summary: str):
+        offset = 0
         async with self.agent.run_stream(message_summary) as result:
             async for chunk in result.stream_text():
-                yield chunk
+                yield chunk[offset:]
+                offset = len(chunk)
