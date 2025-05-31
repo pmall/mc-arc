@@ -1,8 +1,8 @@
 from string import Template
 from google import genai
 from google.genai import types
-from mca.interfaces import Summarizer
 from mca.prompts import SUMMARIZER_PROMPT_TEMPLATE
+from mca.interfaces import Message, Summarizer
 
 
 class GeminiSummarizer(Summarizer):
@@ -21,13 +21,13 @@ class GeminiSummarizer(Summarizer):
         self.max_messages = max_messages
         self.template = Template(SUMMARIZER_PROMPT_TEMPLATE)
 
-    def __call__(self, messages: list[tuple[str, str]]) -> str:
+    def __call__(self, messages: list[Message]) -> str:
         if not messages:
             return "Produce a new message"
 
         buffer = messages[-self.max_messages :] if self.max_messages > 0 else []
 
-        conversation = "\n".join([f"{role}: {content}" for role, content in buffer])
+        conversation = "\n".join([f"- {message}" for message in buffer])
 
         prompt = self.template.substitute(conversation=conversation)
 

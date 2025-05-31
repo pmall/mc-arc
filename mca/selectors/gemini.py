@@ -3,22 +3,23 @@ from string import Template
 from google import genai
 from google.genai import types
 from mca.prompts import SELECTOR_PROMPT_TEMPLATE
+from mca.interfaces import Message, Selector
 
 
-class GeminiParticipantSelector:
-    def __init__(self, model: str, client: genai.Client, mx_messages: int = 10):
+class GeminiParticipantSelector(Selector):
+    def __init__(self, model: str, client: genai.Client, max_messages: int = 10):
         self.model = model
         self.client = client
-        self.mx_messages = mx_messages
+        self.max_messages = max_messages
         self.template = Template(SELECTOR_PROMPT_TEMPLATE)
 
-    def __call__(self, participants: list[str], messages: list[tuple[str, str]]) -> str:
-        buffer = messages[-self.mx_messages :] if self.mx_messages > 0 else []
+    def __call__(self, participants: list[str], messages: list[Message]) -> str:
+        OptionalParticipantEnum = Enum("ParticipantEnum", {p: p for p in participants})
+
+        buffer = messages[-self.max_messages :] if self.max_messages > 0 else []
 
         participants = ", ".join(participants)
-        conversation = "\n".join([f"{role}: {message}" for role, message in buffer])
-
-        OptionalParticipantEnum = Enum("ParticipantEnum", {p: p for p in participants})
+        conversation = "\n".join([f"- {message}" for message in buffer])
 
         prompt = self.template.substitute(
             participants=participants, conversation=conversation

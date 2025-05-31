@@ -1,24 +1,34 @@
 import random
 import contextlib
 from typing import Optional
-from mca.interfaces import Selector
 from mca.participant import Participant
+from mca.interfaces import Message, ParticipantMessage, NarratorMessage, Selector
 
 
 class MasterOfCeremony:
     def __init__(self, participants: list[Participant], selector: Selector):
         self.participants = {p.name: p for p in participants}
         self.selector = selector
-        self.timeline: list[tuple[str, str]] = []
+        self.timeline: list[Message] = []
         self.last_participant_name: Optional[str] = None
 
-    def add_message(self, participant_name: str, message: str):
-        self.timeline.append((participant_name, message))
+    def add_message(self, participant_name: str, content: str):
+        message = ParticipantMessage(participant_name, content)
+
+        self.timeline.append(message)
         self.last_participant_name = participant_name
 
         for name, participant in self.participants.items():
             if name != participant_name:
-                participant.receive_message(participant_name, message)
+                participant.receive_message(message)
+
+    def add_narrator_message(self, content: str):
+        message = NarratorMessage(content)
+
+        self.timeline.append(message)
+
+        for name, participant in self.participants.items():
+            participant.receive_message(message)
 
     @contextlib.asynccontextmanager
     async def step(self, cumulative: bool = False):

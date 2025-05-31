@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 from pydantic_ai import Agent
 from mca.mc import MasterOfCeremony
+from mca.interfaces import Message
 from mca.participant import Participant
 from mca.selectors.gemini import GeminiParticipantSelector
 from mca.summarizers.gemini import GeminiSummarizer
@@ -80,10 +81,11 @@ def out_line(name: str, content: str):
     print(f"{color_code[name]}💬 {name}:{reset} {content.strip()}")
 
 
-def clear(timeline: list[(str, str)]):
+def clear(timeline: list[Message]):
     os.system("clear" if os.name == "posix" else "cls")
-    for name, content in timeline:
-        out_line(name, content)
+    for message in timeline:
+        if message.name:
+            out_line(message.name, message.content)
 
 
 async def main():

@@ -1,5 +1,5 @@
 from typing import AsyncGenerator
-from mca.interfaces import Summarizer, AgentAdapter, AgentResponse
+from mca.interfaces import Message, Summarizer, AgentAdapter, AgentResponse
 
 
 class Participant:
@@ -7,10 +7,10 @@ class Participant:
         self.name = name
         self.agent = agent
         self.summarizer = summarizer
-        self.buffer: list[tuple[str, str]] = []
+        self.buffer: list[Message] = []
 
-    def receive_message(self, sender_name: str, message: str):
-        self.buffer.append((sender_name, message))
+    def receive_message(self, message: Message):
+        self.buffer.append(message)
 
     def reply(self, cumulative: bool = False) -> AsyncGenerator[str, None]:
         summary = self.summarizer(self.buffer)
