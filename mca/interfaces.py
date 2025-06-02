@@ -29,7 +29,7 @@ Message = Union[NarratorMessage, ParticipantMessage]
 
 Selector = Callable[[list[str], list[Message]], str]
 
-Summarizer = Callable[[list[Message]], str]
+Reporter = Callable[[str, list[Message]], str]
 
 # a non cumulative stream of text is expected
 AgentResponse = Union[str, AsyncGenerator[str, None]]

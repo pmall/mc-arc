@@ -1,12 +1,11 @@
 import asyncio
 from dotenv import load_dotenv
-from google import genai
 from pydantic_ai import Agent
 from mca.mc import MasterOfCeremony
 from mca.interfaces import Message
 from mca.participant import Participant
 from mca.selectors import create_gemini_selector
-from mca.summarizers import create_gemini_summarizer
+from mca.reporters import create_gemini_reporter
 from mca.adapters.pydantic_ai import PydanticAiAdapter
 
 # Load environment variables from .env file
@@ -18,7 +17,7 @@ lite_model = "gemini-2.0-flash-lite"
 
 # Configure components
 selector = create_gemini_selector(lite_model)
-summarizer = create_gemini_summarizer(lite_model)
+reporter = create_gemini_reporter(lite_model)
 
 # Shared scene description and per-agent personas (placeholders)
 shared_system_prompt = """
@@ -62,8 +61,8 @@ rhea_pydantic_agent = Agent(model=model, system_prompt=rhea_system_prompt)
 rhea_agent_adapter = PydanticAiAdapter(rhea_pydantic_agent)
 
 # Create participants.
-eliot = Participant("Eliot", eliot_agent_adapter, summarizer)
-rhea = Participant("Rhea", rhea_agent_adapter, summarizer)
+eliot = Participant("Eliot", eliot_agent_adapter, reporter)
+rhea = Participant("Rhea", rhea_agent_adapter, reporter)
 
 # Configure MC with output handler.
 mc = MasterOfCeremony(participants=[eliot, rhea], selector=selector)

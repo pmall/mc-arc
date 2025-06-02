@@ -1,26 +1,25 @@
 from typing import Optional
-from .base import AbstractSummarizer
+from .base import AbstractReporter
 
 
-class OpenAISummarizer(AbstractSummarizer):
-    def _generate_summary(self, prompt: str) -> str:
+class OpenAIReporter(AbstractReporter):
+    def _generate_report(self, prompt: str, max_output_tokens: int) -> str:
         response = self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
             temperature=self.temperature,
-            max_tokens=self.max_output_tokens,
+            max_tokens=max_output_tokens,
         )
         return response.choices[0].message.content
 
 
-def create_openai_summarizer(
+def create_openai_reporter(
     model: str = "gpt-4",
     api_key: Optional[str] = None,
     temperature: float = 0.2,
-    max_output_tokens: int = 1000,
-    max_messages: int = 10,
+    max_messages: int = 100,
 ):
-    """Factory function that creates client and summarizer together."""
+    """Factory function that creates client and reporter together."""
     try:
         from openai import OpenAI
     except ImportError:
@@ -29,15 +28,14 @@ def create_openai_summarizer(
         )
 
     client = OpenAI(api_key=api_key)
-    return OpenAISummarizer(model, client, temperature, max_output_tokens, max_messages)
+    return OpenAIReporter(model, client, temperature, max_messages)
 
 
-def create_openrouter_summarizer(
+def create_openrouter_reporter(
     model: str,
     api_key: Optional[str] = None,
     temperature: float = 0.2,
-    max_output_tokens: int = 1000,
-    max_messages: int = 10,
+    max_messages: int = 100,
 ):
     """Factory function for OpenRouter (uses OpenAI client with different base_url)."""
     try:
@@ -48,4 +46,4 @@ def create_openrouter_summarizer(
         )
 
     client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
-    return OpenAISummarizer(model, client, temperature, max_output_tokens, max_messages)
+    return OpenAIReporter(model, client, temperature, max_messages)

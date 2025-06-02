@@ -4,14 +4,13 @@ version = "0.1.0"
 description = "A model-agnostic multi-agent conversation framework with centralized turn-based control."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "pydantic-ai>=0.2.12",
-    "python-dotenv>=1.1.0",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
     "anthropic>=0.52.1",
     "google-genai>=1.17.0",
     "openai>=1.82.1",
+    "pydantic-ai>=0.2.12",
+    "python-dotenv>=1.1.0",
 ]

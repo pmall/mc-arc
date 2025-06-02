@@ -9,7 +9,6 @@ from .openai import (
 
 __all__ = [
     "AbstractParticipantSelector",
-    "Selector",
     "GeminiParticipantSelector",
     "OpenAIParticipantSelector",
     "AnthropicParticipantSelector",

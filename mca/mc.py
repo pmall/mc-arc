@@ -42,7 +42,7 @@ class MasterOfCeremony:
             finally:
                 self.add_message(participant.name, response.get_full_response())
 
-    def _available_participant_names(self) -> str:
+    def _available_participant_names(self) -> list[str]:
         return [
             name
             for name in self.participants.keys()

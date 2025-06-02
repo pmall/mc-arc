@@ -1,8 +1,8 @@
 from pydantic_ai import Agent
-from mca.interfaces import AgentAdapter, AgentResponse
+from mca.interfaces import AgentResponse
 
 
-class PydanticAiAdapter(AgentAdapter):
+class PydanticAiAdapter:
     def __init__(self, pydantic_agent: Agent):
         self.agent = pydantic_agent
 
@@ -10,8 +10,8 @@ class PydanticAiAdapter(AgentAdapter):
         if hasattr(self.agent, "run_stream"):
             return self._stream_response(message_summary)
         else:
-            result = self.agent.run(message_summary)
-            return result.data
+            result = self.agent.run_sync(message_summary)
+            return result.output
 
     async def _stream_response(self, message_summary: str):
         offset = 0

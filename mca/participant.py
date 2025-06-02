@@ -1,28 +1,5 @@
 from typing import AsyncGenerator
-from mca.interfaces import Message, Summarizer, AgentAdapter, AgentResponse
-
-
-class Participant:
-    def __init__(self, name: str, agent: AgentAdapter, summarizer: Summarizer):
-        self.name = name
-        self.agent = agent
-        self.summarizer = summarizer
-        self.buffer: list[Message] = []
-
-    def receive_message(self, message: Message):
-        self.buffer.append(message)
-
-    def reply(self, cumulative: bool = False) -> AsyncGenerator[str, None]:
-        summary = self.summarizer(self.buffer)
-
-        response = self.agent(summary)
-
-        self.buffer.clear()
-
-        return StreamingResponse(self.name, response, cumulative)
-
-    async def _string_wrapper(self, response: str) -> AsyncGenerator[str, None]:
-        yield response
+from mca.interfaces import Message, Reporter, AgentAdapter, AgentResponse
 
 
 class StreamingResponse:
@@ -60,3 +37,23 @@ class StreamingResponse:
 
     def get_full_response(self) -> str:
         return self.full_response
+
+
+class Participant:
+    def __init__(self, name: str, agent: AgentAdapter, reporter: Reporter):
+        self.name = name
+        self.agent = agent
+        self.reporter = reporter
+        self.buffer: list[Message] = []
+
+    def receive_message(self, message: Message):
+        self.buffer.append(message)
+
+    def reply(self, cumulative: bool = False) -> StreamingResponse:
+        report = self.reporter(self.name, self.buffer)
+
+        self.buffer.clear()
+
+        response = self.agent(report)
+
+        return StreamingResponse(self.name, response, cumulative)
