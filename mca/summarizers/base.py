@@ -5,7 +5,7 @@ from mca.interfaces import Summarizer, Message
 from mca.prompts import SUMMARIZER_PROMPT_TEMPLATE
 
 
-class AbstractSummarizer(Summarizer, ABC):
+class AbstractSummarizer(ABC, Summarizer):
     def __init__(
         self,
         model: str,

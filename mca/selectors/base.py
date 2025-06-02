@@ -5,7 +5,7 @@ from mca.interfaces import Selector
 from mca.prompts import SELECTOR_PROMPT_TEMPLATE
 
 
-class AbstractParticipantSelector(Selector, ABC):
+class AbstractParticipantSelector(ABC, Selector):
     def __init__(self, model: str, client: Any, max_messages: int = 10):
         self.model = model
         self.client = client
