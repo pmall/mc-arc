@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
-from string import Template
+from typing import Optional, Any
 from mca.interfaces import Message
 from mca.prompts import REPORTER_PROMPT_TEMPLATE
 
@@ -17,19 +16,19 @@ class AbstractReporter(ABC):
         self.client = client
         self.temperature = temperature
         self.max_messages = max_messages
-        self.template = Template(REPORTER_PROMPT_TEMPLATE)
+        self.template = REPORTER_PROMPT_TEMPLATE
 
-    def __call__(self, participant: str, messages: list[Message]) -> str:
+    def __call__(self, participant: str, messages: list[Message]) -> Optional[str]:
         if not messages:
-            return "Produce a new message"
+            return None
 
-        buffer = messages[-self.max_messages :] if self.max_messages > 0 else []
-        messages_str = "\n".join([f"- {message}" for message in buffer])
-        prompt = self.template.substitute(
-            participant=participant, messages=messages_str
-        )
+        last_messages = messages[-self.max_messages :] if self.max_messages > 0 else []
 
-        return self._generate_report(prompt, max_output_tokens=len(messages_str))
+        prompt = self.template(participant, last_messages)
+
+        max_output_tokens = sum([len(str(m)) for m in last_messages])
+
+        return self._generate_report(prompt, max_output_tokens=max_output_tokens)
 
     @abstractmethod
     def _generate_report(self, prompt: str, max_output_tokens: int) -> str:

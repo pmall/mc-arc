@@ -65,7 +65,7 @@ eliot = Participant("Eliot", eliot_agent_adapter, reporter)
 rhea = Participant("Rhea", rhea_agent_adapter, reporter)
 
 # Configure MC with output handler.
-mc = MasterOfCeremony(participants=[eliot, rhea], selector=selector)
+mc = MasterOfCeremony(selector, [eliot, rhea])
 
 
 # Run conversation with external control and step-by-step execution
