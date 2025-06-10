@@ -6,13 +6,24 @@ from mca.interfaces import Selector, Message, ContextModifier, TimelineItem
 
 
 class MasterOfCeremony:
-    def __init__(self, selector: Selector, participants: list[Participant]):
+    def __init__(
+        self, selector: Selector, participants: Optional[list[Participant]] = None
+    ):
         self.selector = selector
-        self.participants = {p.name: p for p in participants}
+        self.participants = {}
         self.last_name: Optional[str] = None
         self.timeline: list[Message] = []
         self.modifiers: dict[tuple[str, int], list[ContextModifier]] = {}
         self.offsets: dict[tuple[str, str], int]
+
+        for participant in participants or []:
+            self.add_participant(participant)
+
+    def add_participant(self, participant: Participant):
+        if self.participants.get(participant.name):
+            ValueError(f"Participant named {participant.name} already exists.")
+
+        self.participants[participant.name] = participant
 
     def add_message(self, sender: str, content: str):
         message = Message(sender, content)

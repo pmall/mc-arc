@@ -2,10 +2,10 @@ import asyncio
 from dotenv import load_dotenv
 from pydantic_ai import Agent
 from mca.mc import MasterOfCeremony
-from mca.interfaces import Message
 from mca.participant import Participant
 from mca.selectors import create_gemini_selector
 from mca.reporters import create_gemini_reporter
+from mca.examples.shared import cli_run
 from mca.adapters.pydantic_ai import PydanticAiAdapter
 
 # Load environment variables from .env file
@@ -23,10 +23,10 @@ reporter = create_gemini_reporter(lite_model)
 shared_system_prompt = """
 You are a character in a conversation. Speak naturally, like you would in real life. Respond only with what you would say out loud — do not describe your actions, emotions, or thoughts unless it’s relevant to what you’re saying.
 
-• Do not wrap your words in quotation marks.
-• Do not include stage directions, internal thoughts, or scene descriptions (e.g., no parentheses, asterisks, or narrator-like prose).
-• Do not restate what just happened. Trust that everyone knows what’s going on.
-• Keep it conversational, brief, and reactive. Say what you would *actually* say next.
+- Do not wrap your words in quotation marks.
+- Do not include stage directions, internal thoughts, or scene descriptions (e.g., no parentheses, asterisks, or narrator-like prose).
+- Do not restate what just happened. Trust that everyone knows what’s going on.
+- Keep it conversational, brief, and reactive. Say what you would *actually* say next.
 
 Stay in character. Your only goal is to respond as yourself in this ongoing dialogue.
 
@@ -64,50 +64,16 @@ rhea_agent_adapter = PydanticAiAdapter(rhea_pydantic_agent)
 eliot = Participant("Eliot", eliot_agent_adapter, reporter)
 rhea = Participant("Rhea", rhea_agent_adapter, reporter)
 
-# Configure MC with output handler.
+# Configure the MC.
 mc = MasterOfCeremony(selector, [eliot, rhea])
 
-
-# Run conversation with external control and step-by-step execution
-import os
-
-reset = "\033[0m"
-color_code = {"Eliot": "\033[96m", "Rhea": "\033[95m", "Kael": "\033[92m"}
+# Color code for each participants.
+color_codes = {"Eliot": "\033[96m", "Rhea": "\033[95m", "Kael": "\033[92m"}
 
 
-def out_line(name: str, content: str):
-    print(f"{color_code[name]}💬 {name}:{reset} {content.strip()}")
-
-
-def clear(timeline: list[Message]):
-    os.system("clear" if os.name == "posix" else "cls")
-    for message in timeline:
-        if message.name:
-            out_line(message.name, message.content)
-
-
-async def main():
-    while True:
-        async with mc.step() as stream:
-            output = ""
-            async for name, chunk in stream:
-                for char in list(chunk):
-                    output += char
-                    clear(mc.timeline)
-                    out_line(name, output.strip())
-
-                    await asyncio.sleep(0.01)
-
-        clear(mc.timeline)
-
-        user_input = input("Your response: ")
-
-        if user_input.lower() == "quit":
-            break
-
-        if user_input:
-            mc.add_message("Kael", user_input)
+def main():
+    asyncio.run(cli_run(mc, "Kael", color_codes))
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
