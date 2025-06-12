@@ -9,6 +9,7 @@ dependencies = []
 [dependency-groups]
 dev = [
     "google-genai>=1.17.0",
+    "logfire>=3.18.0",
     "pydantic-ai>=0.2.16",
     "python-dotenv>=1.1.0",
 ]
