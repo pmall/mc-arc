@@ -1,12 +1,11 @@
 import asyncio
 from dotenv import load_dotenv
-from pydantic_ai import Agent
 from mca.mc import MasterOfCeremony
+from mca.adapters import GenaiAdapter
 from mca.participant import Participant
 from mca.selectors import create_gemini_selector
 from mca.reporters import create_gemini_reporter
 from mca.examples.shared import read_config, cli_run
-from mca.adapters.pydantic_ai import PydanticAiAdapter
 
 # Load environment variables from .env file
 load_dotenv()
@@ -89,9 +88,8 @@ participants = []
 prompts = read_config("french", config)
 
 for name, prompt in prompts.items():
-    pydantic_agent = Agent(model=model, system_prompt=prompt)
-    agent_adapter = PydanticAiAdapter(pydantic_agent)
-    participant = Participant(name, agent_adapter, reporter)
+    agent = GenaiAdapter(model=model, system_prompt=prompt)
+    participant = Participant(name, agent, reporter)
     participants.append(participant)
 
 # Configure the MC.
