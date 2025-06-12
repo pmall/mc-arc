@@ -35,6 +35,6 @@ Selector = Callable[[list[str], list[Message]], str]
 Reporter = Callable[[str, list[Message]], Optional[str]]
 
 # a non cumulative stream of text is expected
-AgentResponse = Union[str, AsyncGenerator[str, None]]
+AgentResponse = AsyncGenerator[str, None]
 
 AgentAdapter = Callable[[str], AgentResponse]

@@ -24,16 +24,10 @@ class StreamingResponse:
                 pass
 
     async def _create_chunk_generator(self) -> AsyncGenerator[tuple[str, str], None]:
-        if isinstance(self.response, str):
-            # Handle string case - single chunk
-            self.full_response = self.response
-            yield (self.name, self.response)
-        else:
-            # Handle async generator case
-            async for chunk in self.response:
-                self.full_response += chunk
-                chunk_to_send = self.full_response if self.cumulative else chunk
-                yield (self.name, chunk_to_send)
+        async for chunk in self.response:
+            self.full_response += chunk
+            chunk_to_send = self.full_response if self.cumulative else chunk
+            yield (self.name, chunk_to_send)
 
     def get_full_response(self) -> str:
         return self.full_response
