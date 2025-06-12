@@ -36,19 +36,13 @@ class MasterOfCeremony:
                 participant.receive_message(message)
 
     def add_modifier(self, modifier: ContextModifier):
-        index = len(self.timeline)
-
-        for name, participant in self.participants.items():
-            self.modifiers[(name, index)].append(modifier)
-            participant.receive_modifier(modifier)
+        for participant in self.participants.values():
+            self._add_modifier_for(participant, modifier)
 
     def add_modifier_for(self, name: str, modifier: ContextModifier):
-        index = len(self.timeline)
-
         participant = self._select_participant(name)
 
-        self.modifiers[(name, index)].append(modifier)
-        participant.receive_modifier(modifier)
+        self._add_modifier_for(participant, modifier)
 
     def pull_timeline_of(self, name: str, subscriber: str) -> list[TimelineItem]:
         timeline: list[TimelineItem] = []
@@ -83,6 +77,13 @@ class MasterOfCeremony:
             return participant
 
         raise ValueError(f"No participant named {name}.")
+
+    def _add_modifier_for(self, participant: Participant, modifier: ContextModifier):
+        index = len(self.timeline)
+
+        self.modifiers.setdefault((participant.name, index), []).append(modifier)
+
+        participant.receive_modifier(modifier)
 
     def _available_names(self) -> list[str]:
         return [name for name in self.participants.keys() if name != self.last_name]
