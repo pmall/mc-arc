@@ -38,7 +38,7 @@ def PARTICIPANT_PROMPT_TEMPLATE(
         return "This is the begining of the conversation."
 
     if not modifiers:
-        participant_no_modifier(report)
+        return participant_no_modifier(report)
 
     return participant_with_modifiers(report, modifiers)
 
@@ -86,6 +86,7 @@ Your job is to write a short, natural-language briefing that helps $participant 
 - Do not copy, quote, or imitate dialogue formatting (e.g., "Name: ...").
 - Your report should be roughly one sentence per message unless merging is natural.
 - Do not invent or assume information that wasn't stated.
+- Do not add intro or final note, output the report only.
 
 Keep the style simple and neutral, as if you are a helpful assistant catching them up.
 
