@@ -21,7 +21,7 @@ class MasterOfCeremony:
 
     def add_participant(self, participant: Participant):
         if self.participants.get(participant.name):
-            ValueError(f"Participant named {participant.name} already exists.")
+            raise ValueError(f"Participant named {participant.name} already exists.")
 
         self.participants[participant.name] = participant
 
@@ -49,7 +49,7 @@ class MasterOfCeremony:
 
         offset = self.offsets.get((name, subscriber), 0)
 
-        for i in range(offset):
+        for i in range(offset, len(timeline)):
             message = self.timeline[i]
             modifiers = self.modifiers[(name, i)]
             timeline.append(TimelineItem(message, modifiers))
