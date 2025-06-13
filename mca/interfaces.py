@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import AsyncGenerator, Callable, Optional, Literal
+from typing import AsyncGenerator, Callable, Literal
 
 
 @dataclass
@@ -29,7 +29,7 @@ class ContextModifier:
 
 Selector = Callable[[list[str], list[Message]], str]
 
-Reporter = Callable[[str, list[Message]], Optional[str]]
+Reporter = Callable[[str, list[Message]], str]
 
 # a non cumulative stream of text is expected
 AgentResponse = AsyncGenerator[str, None]

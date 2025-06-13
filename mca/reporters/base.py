@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional, Any
+from typing import Any
 from mca.interfaces import Message
 from mca.prompts import REPORTER_PROMPT_TEMPLATE
 
@@ -18,9 +18,9 @@ class AbstractReporter(ABC):
         self.max_messages = max_messages
         self.template = REPORTER_PROMPT_TEMPLATE
 
-    def __call__(self, participant: str, messages: list[Message]) -> Optional[str]:
+    def __call__(self, participant: str, messages: list[Message]) -> str:
         if not messages:
-            return None
+            return ""
 
         last_messages = messages[-self.max_messages :] if self.max_messages > 0 else []
 
