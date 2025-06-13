@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import AsyncGenerator, Callable, Optional, Union, Literal
+from typing import AsyncGenerator, Callable, Optional, Literal
 
 
 @dataclass
@@ -11,23 +11,20 @@ class Message:
         return f"{self.name}: {self.content}"
 
 
+ModifierType = Literal[
+    "narrator_event",
+    "internal_monologue",
+]
+
+
 @dataclass
 class ContextModifier:
-    type: Literal[
-        "narrator_event",
-        "internal_monologue",
-    ]
+    type: ModifierType
 
     content: str
 
     def __str__(self):
         return f"{self.content}"
-
-
-@dataclass
-class TimelineItem:
-    message: Message
-    modifiers: list[ContextModifier]
 
 
 Selector = Callable[[list[str], list[Message]], str]

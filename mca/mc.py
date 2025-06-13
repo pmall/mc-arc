@@ -2,19 +2,19 @@ import random
 import contextlib
 from typing import Optional
 from mca.participant import Participant
-from mca.interfaces import Selector, Message, ContextModifier, TimelineItem
+from mca.interfaces import Selector, Message, ModifierType, ContextModifier
 
 
 class MasterOfCeremony:
     def __init__(
         self, selector: Selector, participants: Optional[list[Participant]] = None
     ):
+        self.stepn = 0
         self.selector = selector
-        self.participants = {}
+        self.participants: dict[str, Participant] = {}
         self.last_name: Optional[str] = None
         self.timeline: list[Message] = []
-        self.modifiers: dict[tuple[str, int], list[ContextModifier]] = {}
-        self.offsets: dict[tuple[str, str], int]
+        self.offsets: dict[str, int] = {}
 
         for participant in participants or []:
             self.add_participant(participant)
@@ -35,26 +35,21 @@ class MasterOfCeremony:
             if name != sender:
                 participant.receive_message(message)
 
-    def add_modifier(self, modifier: ContextModifier):
+    def add_modifier(self, type: ModifierType, content: str):
         for participant in self.participants.values():
-            self._add_modifier_for(participant, modifier)
+            participant.receive_modifier(ContextModifier(type, content))
 
-    def add_modifier_for(self, name: str, modifier: ContextModifier):
+    def add_modifier_to(self, name: str, type: ModifierType, content: str):
         participant = self._select_participant(name)
 
-        self._add_modifier_for(participant, modifier)
+        participant.receive_modifier(ContextModifier(type, content))
 
-    def pull_timeline_of(self, name: str, subscriber: str) -> list[TimelineItem]:
-        timeline: list[TimelineItem] = []
+    def pull_timeline_as(self, subscriber: str) -> list[Message]:
+        start = self.offsets.get(subscriber, 0)
 
-        offset = self.offsets.get((name, subscriber), 0)
+        timeline = self.timeline[start:]
 
-        for i in range(offset, len(timeline)):
-            message = self.timeline[i]
-            modifiers = self.modifiers[(name, i)]
-            timeline.append(TimelineItem(message, modifiers))
-
-        self.offsets[(name, subscriber)] = len(self.timeline)
+        self.offsets[subscriber] = len(self.timeline)
 
         return timeline
 
@@ -78,33 +73,22 @@ class MasterOfCeremony:
 
         raise ValueError(f"No participant named {name}.")
 
-    def _add_modifier_for(self, participant: Participant, modifier: ContextModifier):
-        index = len(self.timeline)
-
-        self.modifiers.setdefault((participant.name, index), []).append(modifier)
-
-        participant.receive_modifier(modifier)
-
-    def _available_names(self) -> list[str]:
-        return [name for name in self.participants.keys() if name != self.last_name]
-
-    def _select_available_name(self) -> str:
-        available_names = self._available_names()
+    def _select_available_participant(self) -> Participant:
+        available_names = [
+            name for name in self.participants.keys() if name != self.last_name
+        ]
 
         try:
             name = self.selector(available_names, self.timeline)
 
             if name in available_names:
-                return name
+                return self.participants[name]
             else:
                 return self._select_fallback(available_names)
         except Exception:
             return self._select_fallback(available_names)
 
-    def _select_available_participant(self) -> Participant:
-        name = self._select_available_name()
+    def _select_fallback(self, available_names: list[str]) -> Participant:
+        name = random.choice(available_names)
 
         return self.participants[name]
-
-    def _select_fallback(self, available_names: list[str]) -> str:
-        return random.choice(available_names)
