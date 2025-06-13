@@ -2,8 +2,7 @@ import os
 import asyncio
 from string import Template
 from typing import Callable, Optional
-from mca.mc import MasterOfCeremony
-from mca.interfaces import Message
+from mca import MasterOfCeremony, Message
 
 
 # prompt template:

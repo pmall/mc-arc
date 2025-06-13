@@ -1,11 +1,10 @@
 import asyncio
 from dotenv import load_dotenv
-from mca.mc import MasterOfCeremony
+from mca import MasterOfCeremony, Participant
 from mca.adapters import GenaiAdapter
-from mca.participant import Participant
 from mca.selectors import create_gemini_selector
-from mca.reporters import create_gemini_reporter
-from mca.examples.shared import read_config, cli_run
+from mca.reporters import create_bullet_point_reporter
+from shared import read_config, cli_run
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +15,7 @@ lite_model = "gemini-2.0-flash-lite"
 
 # Configure components
 selector = create_gemini_selector(lite_model)
-reporter = create_gemini_reporter(lite_model)
+reporter = create_bullet_point_reporter()
 
 # scene configuration.
 config = {

@@ -11,7 +11,7 @@ class Message:
         return f"{self.name}: {self.content}"
 
 
-ModifierType = Literal[
+ContextModifierType = Literal[
     "narrator_event",
     "internal_monologue",
 ]
@@ -19,7 +19,7 @@ ModifierType = Literal[
 
 @dataclass
 class ContextModifier:
-    type: ModifierType
+    type: ContextModifierType
 
     content: str
 

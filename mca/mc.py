@@ -2,7 +2,7 @@ import random
 import contextlib
 from typing import Optional
 from mca.participant import Participant
-from mca.interfaces import Selector, Message, ModifierType, ContextModifier
+from mca.interfaces import Selector, ContextModifierType, Message, ContextModifier
 
 
 class MasterOfCeremony:
@@ -35,11 +35,11 @@ class MasterOfCeremony:
             if name != sender:
                 participant.receive_message(message)
 
-    def add_modifier(self, type: ModifierType, content: str):
+    def add_modifier(self, type: ContextModifierType, content: str):
         for participant in self.participants.values():
             participant.receive_modifier(ContextModifier(type, content))
 
-    def add_modifier_to(self, name: str, type: ModifierType, content: str):
+    def add_modifier_to(self, name: str, type: ContextModifierType, content: str):
         participant = self._select_participant(name)
 
         participant.receive_modifier(ContextModifier(type, content))
