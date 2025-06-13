@@ -1,6 +1,11 @@
 from mca.response import StreamingResponse
 from mca.interfaces import Message, ContextModifier, Reporter, AgentAdapter
-from mca.prompts import PARTICIPANT_PROMPT_TEMPLATE
+from mca.prompts import (
+    PARTICIPANT_PROMPT_TEMPLATE,
+    PARTICIPANT_PROMPT_TEMPLATE_EMPTY,
+    PARTICIPANT_PROMPT_TEMPLATE_MESSAGES_ONLY,
+    PARTICIPANT_PROMPT_TEMPLATE_MODIFIERS_ONLY,
+)
 
 
 class Participant:
@@ -31,6 +36,15 @@ class Participant:
         return StreamingResponse(self.name, response, cumulative)
 
     def _prompt(self, messages, modifiers) -> str:
+        if not messages and not modifiers:
+            return PARTICIPANT_PROMPT_TEMPLATE_EMPTY()
+
+        if not messages and modifiers:
+            return PARTICIPANT_PROMPT_TEMPLATE_MODIFIERS_ONLY(modifiers)
+
         report = self.reporter(self.name, messages)
+
+        if messages and not modifiers:
+            return PARTICIPANT_PROMPT_TEMPLATE_MESSAGES_ONLY(report)
 
         return PARTICIPANT_PROMPT_TEMPLATE(report, modifiers)

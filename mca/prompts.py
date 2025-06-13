@@ -1,10 +1,26 @@
 from string import Template
-from typing import Optional
 from mca.interfaces import Message, ContextModifier
 
 
 # participant
-def participant_no_modifier(report: str):
+def PARTICIPANT_PROMPT_TEMPLATE_EMPTY():
+    return "You are the first to speak"
+
+
+def PARTICIPANT_PROMPT_TEMPLATE_MODIFIERS_ONLY(modifiers: list[ContextModifier]):
+    modifiers_str = "\n".join(str(m) for m in modifiers)
+
+    return Template(
+        """
+You are the first to speak
+
+Narrative events:
+$modifiers
+""".strip()
+    ).substitute(modifiers=modifiers_str)
+
+
+def PARTICIPANT_PROMPT_TEMPLATE_MESSAGES_ONLY(report: str):
     return Template(
         """
 Report of the conversation since your last turn:
@@ -15,7 +31,7 @@ Now it is your turn:
     ).substitute(report=report)
 
 
-def participant_with_modifiers(report: str, modifiers: list[ContextModifier]):
+def PARTICIPANT_PROMPT_TEMPLATE(report: str, modifiers: list[ContextModifier]):
     modifiers_str = "\n".join(str(m) for m in modifiers)
 
     return Template(
@@ -23,24 +39,12 @@ def participant_with_modifiers(report: str, modifiers: list[ContextModifier]):
 Report of the conversation since your last turn:
 $report
 
-Narrative event since your last turn:
+Narrative events that happened since your last turn:
 $modifiers
 
 Now it is your turn:
 """.strip()
     ).substitute(report=report, modifiers=modifiers_str)
-
-
-def PARTICIPANT_PROMPT_TEMPLATE(
-    report: Optional[str], modifiers: list[ContextModifier]
-) -> str:
-    if not report:
-        return "This is the begining of the conversation."
-
-    if not modifiers:
-        return participant_no_modifier(report)
-
-    return participant_with_modifiers(report, modifiers)
 
 
 # selector
