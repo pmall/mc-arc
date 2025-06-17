@@ -52,7 +52,6 @@ The central orchestrator that manages the conversation flow:
 ```python
 from mca import MasterOfCeremony, Participant
 from mca.selectors import create_gemini_selector
-from mca.reporters import create_bullet_point_reporter
 
 # Create a selector that chooses the next speaker
 selector = create_gemini_selector("gemini-2.0-flash-lite")
@@ -67,6 +66,7 @@ A wrapper around your AI agent that handles message buffering and reporting:
 ```python
 from pydantic_ai import Agent
 from mca.adapters import PydanticAiAdapter
+from mca.reporters import create_bullet_point_reporter
 
 # Create a PydanticAI agent
 agent = Agent("gemini-2.0-flash", system_prompt="You are a helpful assistant")
@@ -133,16 +133,27 @@ rhea_agent = Agent("gemini-2.0-flash", system_prompt=f"{shared_system_prompt}\n{
 eliot = Participant("Eliot", PydanticAiAdapter(eliot_agent), reporter)
 rhea = Participant("Rhea", PydanticAiAdapter(rhea_agent), reporter)
 
-# Create the conversation
+# Create the conversation (user can participate as "Kael")
 mc = MasterOfCeremony(selector, [eliot, rhea])
 
-# Run the conversation
+# Run interactive conversation
 async def run_conversation():
-    for _ in range(10):  # 10 turns of conversation
+    # Start the conversation
+    mc.add_message("Kael", "What happened here? The systems are all offline...")
+    
+    while True:
         async with mc.step() as response_stream:
             async for chunk in response_stream:
                 print(chunk, end="", flush=True)
             print("\n")
+        
+        user_input = input("Your response: ")
+        
+        if user_input.lower() == "/quit":
+            break
+        
+        if user_input:
+            mc.add_message("Kael", user_input)
 
 asyncio.run(run_conversation())
 ```
