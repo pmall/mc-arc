@@ -1,7 +1,8 @@
 import asyncio
 from dotenv import load_dotenv
+from pydantic_ai import Agent
 from mca import MasterOfCeremony, Participant
-from mca.adapters import GenaiAdapter
+from mca.adapters import PydanticAiAdapter
 from mca.selectors import create_gemini_selector
 from mca.reporters import create_bullet_point_reporter
 from shared import read_config, cli_run
@@ -87,8 +88,8 @@ participants = []
 prompts = read_config("french", config)
 
 for name, prompt in prompts.items():
-    agent = GenaiAdapter(model=model, system_prompt=prompt)
-    participant = Participant(name, agent, reporter)
+    agent = Agent(model=model, system_prompt=prompt)
+    participant = Participant(name, PydanticAiAdapter(agent), reporter)
     participants.append(participant)
 
 # Configure the MC.

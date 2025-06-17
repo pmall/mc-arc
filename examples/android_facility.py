@@ -1,7 +1,8 @@
 import asyncio
 from dotenv import load_dotenv
+from pydantic_ai import Agent
 from mca import MasterOfCeremony, Participant
-from mca.adapters import GenaiAdapter
+from mca.adapters import PydanticAiAdapter
 from mca.selectors import create_gemini_selector
 from mca.reporters import create_bullet_point_reporter
 from shared import cli_run
@@ -52,12 +53,12 @@ rhea_persona = "You are Rhea, the empathetic companion android. You are sensitiv
 eliot_system_prompt = f"{shared_system_prompt}\n{eliot_persona}"
 rhea_system_prompt = f"{shared_system_prompt}\n{rhea_persona}"
 
-eliot_agent = GenaiAdapter(model=model, system_prompt=eliot_system_prompt)
-rhea_agent = GenaiAdapter(model=model, system_prompt=rhea_system_prompt)
+eliot_agent = Agent(model=model, system_prompt=eliot_system_prompt)
+rhea_agent = Agent(model=model, system_prompt=rhea_system_prompt)
 
 # Create participants.
-eliot = Participant("Eliot", eliot_agent, reporter)
-rhea = Participant("Rhea", rhea_agent, reporter)
+eliot = Participant("Eliot", PydanticAiAdapter(eliot_agent), reporter)
+rhea = Participant("Rhea", PydanticAiAdapter(rhea_agent), reporter)
 
 # Configure the MC.
 mc = MasterOfCeremony(selector, [eliot, rhea])
