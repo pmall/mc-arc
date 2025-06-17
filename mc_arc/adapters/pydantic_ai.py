@@ -1,5 +1,5 @@
 from pydantic_ai import Agent
-from mca.interfaces import AgentResponse
+from mc_arc.interfaces import AgentResponse
 
 
 class PydanticAiAdapter:

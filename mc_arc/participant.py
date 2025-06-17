@@ -1,6 +1,6 @@
-from mca.response import StreamingResponse
-from mca.interfaces import Message, ContextModifier, Reporter, AgentAdapter
-from mca.prompts import (
+from mc_arc.response import StreamingResponse
+from mc_arc.interfaces import Message, ContextModifier, Reporter, AgentAdapter
+from mc_arc.prompts import (
     PARTICIPANT_PROMPT_TEMPLATE,
     PARTICIPANT_PROMPT_TEMPLATE_EMPTY,
     PARTICIPANT_PROMPT_TEMPLATE_MESSAGES_ONLY,

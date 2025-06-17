@@ -1,10 +1,10 @@
 import asyncio
 from dotenv import load_dotenv
 from pydantic_ai import Agent
-from mca import MasterOfCeremony, Participant
-from mca.adapters import PydanticAiAdapter
-from mca.selectors import create_gemini_selector
-from mca.reporters import create_bullet_point_reporter
+from mc_arc import MasterOfCeremony, Participant
+from mc_arc.adapters import PydanticAiAdapter
+from mc_arc.selectors import create_gemini_selector
+from mc_arc.reporters import create_bullet_point_reporter
 from shared import cli_run
 
 # Load environment variables from .env file

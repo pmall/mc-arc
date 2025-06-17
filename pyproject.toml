@@ -1,15 +1,17 @@
 [project]
-name = "mca"
+name = "mc_arc"
 version = "0.1.0"
-description = "A model-agnostic multi-agent conversation framework with centralized turn-based control."
+description = "Experimental multi-agent conversation framework enabling natural group discussions between AI agents."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
 
 [dependency-groups]
 dev = [
+    "anthropic>=0.52.1",
     "google-genai>=1.17.0",
     "logfire>=3.18.0",
+    "openai>=1.82.1",
     "pydantic-ai>=0.2.16",
     "python-dotenv>=1.1.0",
 ]

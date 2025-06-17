@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
-from mca.interfaces import Message
-from mca.prompts import REPORTER_PROMPT_TEMPLATE
+from mc_arc.interfaces import Message
+from mc_arc.prompts import REPORTER_PROMPT_TEMPLATE
 
 
 class AbstractReporter(ABC):

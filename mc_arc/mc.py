@@ -1,8 +1,8 @@
 import random
 import contextlib
 from typing import Optional
-from mca.participant import Participant
-from mca.interfaces import Selector, ContextModifierType, Message, ContextModifier
+from mc_arc.participant import Participant
+from mc_arc.interfaces import Selector, ContextModifierType, Message, ContextModifier
 
 
 class MasterOfCeremony:

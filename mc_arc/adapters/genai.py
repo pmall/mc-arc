@@ -1,7 +1,7 @@
 from google import genai
 from google.genai import types
 from typing import Optional
-from mca.interfaces import AgentResponse
+from mc_arc.interfaces import AgentResponse
 
 
 class GenaiAdapter:

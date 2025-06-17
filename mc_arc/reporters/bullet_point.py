@@ -1,4 +1,4 @@
-from mca.interfaces import Message
+from mc_arc.interfaces import Message
 
 
 class BulletPointReporter:

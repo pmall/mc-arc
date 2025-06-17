@@ -1,5 +1,5 @@
 from string import Template
-from mca.interfaces import Message, ContextModifier
+from mc_arc.interfaces import Message, ContextModifier
 
 
 # participant

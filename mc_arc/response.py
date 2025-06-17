@@ -1,5 +1,5 @@
 from typing import AsyncGenerator
-from mca.interfaces import AgentResponse
+from mc_arc.interfaces import AgentResponse
 
 
 class StreamingResponse:

@@ -38,11 +38,11 @@ def create_anthropic_selector(
 ):
     """Factory function that creates client and selector together."""
     try:
-        import anthropic
+        from anthropic import Anthropic
     except ImportError:
         raise ImportError(
             "anthropic package not installed. Install with: pip install anthropic"
         )
 
-    client = anthropic.Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key)
     return AnthropicParticipantSelector(model, client, max_messages)
