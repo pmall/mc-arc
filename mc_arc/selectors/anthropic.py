@@ -1,4 +1,3 @@
-from typing import Optional
 from .base import AbstractParticipantSelector
 
 
@@ -33,7 +32,7 @@ class AnthropicParticipantSelector(AbstractParticipantSelector):
 
 def create_anthropic_selector(
     model: str = "claude-3-5-sonnet-20241022",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     max_messages: int = 10,
 ):
     """Factory function that creates client and selector together."""

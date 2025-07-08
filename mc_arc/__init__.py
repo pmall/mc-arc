@@ -6,8 +6,6 @@ from .interfaces import (
     AgentResponse,
     AgentAdapter,
     Message,
-    ContextModifier,
-    ContextModifierType,
 )
 
 __all__ = [
@@ -18,6 +16,4 @@ __all__ = [
     "AgentResponse",
     "AgentAdapter",
     "Message",
-    "ContextModifier",
-    "ContextModifierType",
 ]

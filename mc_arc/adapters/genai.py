@@ -1,12 +1,11 @@
 from google import genai
 from google.genai import types
-from typing import Optional
 from mc_arc.interfaces import AgentResponse
 
 
 class GenaiAdapter:
     def __init__(
-        self, model: str, system_prompt: str, api_key: Optional[str] = None, tools=None
+        self, model: str, system_prompt: str, api_key: str | None = None, tools=None
     ):
         client = genai.Client(api_key=api_key)
 

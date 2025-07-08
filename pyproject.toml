@@ -10,8 +10,10 @@ dependencies = []
 dev = [
     "anthropic>=0.52.1",
     "google-genai>=1.17.0",
+    "lancedb>=0.24.0",
     "logfire>=3.18.0",
     "openai>=1.82.1",
+    "pyarrow>=20.0.0",
     "pydantic-ai>=0.2.16",
     "python-dotenv>=1.1.0",
 ]

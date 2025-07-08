@@ -1,18 +1,18 @@
 import random
 import contextlib
-from typing import Optional
 from mc_arc.participant import Participant
-from mc_arc.interfaces import Selector, ContextModifierType, Message, ContextModifier
+from mc_arc.interfaces import Selector, Message
 
 
 class MasterOfCeremony:
     def __init__(
-        self, selector: Selector, participants: Optional[list[Participant]] = None
+        self,
+        selector: Selector | None = None,
+        participants: list[Participant] | None = None,
     ):
-        self.stepn = 0
         self.selector = selector
         self.participants: dict[str, Participant] = {}
-        self.last_name: Optional[str] = None
+        self.last_name: str | None = None
         self.timeline: list[Message] = []
         self.offsets: dict[str, int] = {}
 
@@ -31,18 +31,8 @@ class MasterOfCeremony:
         self.timeline.append(message)
         self.last_name = sender
 
-        for name, participant in self.participants.items():
-            if name != sender:
-                participant.receive_message(message)
-
-    def add_modifier(self, type: ContextModifierType, content: str):
         for participant in self.participants.values():
-            participant.receive_modifier(ContextModifier(type, content))
-
-    def add_modifier_to(self, name: str, type: ContextModifierType, content: str):
-        participant = self._select_participant(name)
-
-        participant.receive_modifier(ContextModifier(type, content))
+            participant.receive_message(message)
 
     def pull_timeline_as(self, subscriber: str) -> list[Message]:
         start = self.offsets.get(subscriber, 0)
@@ -77,6 +67,9 @@ class MasterOfCeremony:
         available_names = [
             name for name in self.participants.keys() if name != self.last_name
         ]
+
+        if not self.selector:
+            return self._select_fallback(available_names)
 
         try:
             name = self.selector(available_names, self.timeline)

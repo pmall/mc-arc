@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import AsyncGenerator, Callable, Literal
+from typing import AsyncGenerator, Callable, Union
 
 
 @dataclass
@@ -9,22 +9,6 @@ class Message:
 
     def __str__(self):
         return f"{self.name}: {self.content}"
-
-
-ContextModifierType = Literal[
-    "narrator_event",
-    "internal_monologue",
-]
-
-
-@dataclass
-class ContextModifier:
-    type: ContextModifierType
-
-    content: str
-
-    def __str__(self):
-        return f"{self.content}"
 
 
 Selector = Callable[[list[str], list[Message]], str]

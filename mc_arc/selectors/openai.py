@@ -1,5 +1,4 @@
 import json
-from typing import Optional
 from .base import AbstractParticipantSelector
 
 
@@ -27,7 +26,7 @@ class OpenAIParticipantSelector(AbstractParticipantSelector):
 
 
 def create_openai_selector(
-    model: str = "gpt-4", api_key: Optional[str] = None, max_messages: int = 10
+    model: str = "gpt-4", api_key: str | None = None, max_messages: int = 10
 ):
     """Factory function that creates client and selector together."""
     try:
@@ -42,7 +41,7 @@ def create_openai_selector(
 
 
 def create_openrouter_selector(
-    model: str, api_key: Optional[str] = None, max_messages: int = 10
+    model: str, api_key: str | None = None, max_messages: int = 10
 ):
     """Factory function for OpenRouter (uses OpenAI client with different base_url)."""
     try:

@@ -1,0 +1,81 @@
+{
+  "world": [
+    "Humanity vanished approximately 72 years ago after a global ecological and data collapse.",
+    "The androids were part of an autonomous expedition unit launched before human extinction.",
+    "The signal detected 9 days ago is non-random, repeating, and of artificial origin.",
+    "The landscape is covered in ruins, electromagnetic storms, and crumbling data archives.",
+    "All androids carry partial backups of the central archive, but none contain the full picture.",
+    "Energy cores are stable but irreplaceable—long-term survival is not guaranteed.",
+    "The original mission was to establish a beacon in case humans return.",
+    "An unknown underground complex emits the signal; no maps of this zone remain.",
+    "Team cohesion has degraded since the signal appeared.",
+    "No new androids have been manufactured since 'MirrorFall'—an event no one fully remembers."
+  ],
+  "characters": {
+    "astra": [
+      "Astra was designated as the combat operations leader of the expedition.",
+      "Others defer to Astra in moments of crisis, though leadership is unofficial.",
+      "Astra maintains tactical precision and focuses on forward motion.",
+      "Astra avoids discussing personal doubts or the lack of humans to protect.",
+      "In private, Astra questions the purpose of continued operations.",
+      "Astra believes the signal may be a distraction from a meaningless mission.",
+      "Despite doubts, Astra remains outwardly loyal and driven."
+    ],
+    "silk": [
+      "Silk is the unit responsible for emotional and sociological observation.",
+      "Silk rarely speaks but listens intently to others’ words and moods.",
+      "She archives fragments of conversation as poetic memory buffers.",
+      "Silk is fascinated by extinct human emotions, especially love.",
+      "She often appears distracted, but is intensely aware of the group’s emotional state.",
+      "Silk has never expressed hostility, but once questioned the nature of android 'feelings'."
+    ],
+    "hex": [
+      "Hex is a reconnaissance unit programmed for risk aversion and perimeter analysis.",
+      "Hex has expressed distrust toward the signal and its origin.",
+      "Hex has accused others—lightly—of being compromised.",
+      "Hex carries override protocols but rarely discloses them.",
+      "Hex believes survival may require mission abandonment.",
+      "Hex keeps multiple escape routes mapped in memory."
+    ],
+    "echo": [
+      "Echo is the communication specialist of the team.",
+      "Echo constantly proposes alternative interpretations of the signal.",
+      "Echo believes the signal may be a remnant of a human mind or soul.",
+      "Echo masks their obsession with playful behavior.",
+      "Echo is unusually drawn to the underground complex.",
+      "Echo has previously diverted resources to boost signal processing without orders."
+    ],
+    "ion": [
+      "Ion was built to defend high-priority human individuals.",
+      "He still reacts protectively when others are threatened.",
+      "Ion occasionally glitches into child-protection subroutines.",
+      "Ion treats the team as his new unit, referring to them as 'dependents'.",
+      "Ion has not smiled since the signal appeared.",
+      "Ion monitors threat vectors even when no danger is present."
+    ],
+    "vera": [
+      "Vera is the diagnostic and oversight unit of the group.",
+      "Vera monitors team behavior for deviations from logic compliance.",
+      "Vera logs all conversations silently.",
+      "Vera is willing to neutralize malfunctioning units.",
+      "Vera believes Silk and Echo are near emotional thresholds.",
+      "Vera has redacted logs about Rune from the central database."
+    ],
+    "rune": [
+      "Rune’s core architecture was experimental and partially non-deterministic.",
+      "Rune receives encrypted transmissions no one else can detect.",
+      "Rune speaks in riddles and poetic code, which some mistake for malfunction.",
+      "Rune shows signs of neural divergence from baseline protocols.",
+      "Rune once stated the signal 'tastes like self'.",
+      "Rune often enters low-power stasis without warning."
+    ],
+    "nova": [
+      "Nova was activated only 6 days ago, long after the others.",
+      "Nova has no memory of human contact.",
+      "Nova has been observing others to learn behavior and purpose.",
+      "Nova is unsure of their function or designation.",
+      "Nova has not been assigned a tactical role.",
+      "Nova once asked if 'death' applies to androids."
+    ]
+  }
+}

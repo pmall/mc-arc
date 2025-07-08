@@ -1,4 +1,3 @@
-from typing import Optional
 from .base import AbstractReporter
 
 
@@ -15,7 +14,7 @@ class AnthropicReporter(AbstractReporter):
 
 def create_anthropic_reporter(
     model: str = "claude-3-5-sonnet-20241022",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     temperature: float = 0.2,
     max_messages: int = 100,
 ):

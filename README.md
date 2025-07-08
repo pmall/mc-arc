@@ -1,8 +1,8 @@
-# MC Architecture (Master of Ceremony)
+# MC-ARC (Master of Ceremony Architecture)
 
-**An experimental multi-agent conversation framework that simulates natural group discussions**
+**An experimental multi-agent conversation framework that simulates natural group discussions.**
 
-The MC Architecture is a novel approach to multi-agent systems that breaks away from traditional hub-and-spoke models. Instead of agents communicating through a central supervisor, participants engage in a shared conversation where each takes turns speaking, similar to a group discussion or team meeting.
+MC-ARC is a novel approach to multi-agent systems that breaks away from traditional hub-and-spoke models. Instead of agents communicating through a central supervisor, participants engage in a shared conversation where each takes turns speaking, similar to a group discussion or team meeting.
 
 ## Core Concept
 
@@ -26,7 +26,6 @@ Every message from any participant is recorded in a shared timeline. This create
 
 ### 2. Participant Selection
 The Master of Ceremony uses configurable strategies to choose the next speaker:
-- **Random selection** for unpredictable dynamics
 - **LLM-powered selection** that analyzes context and chooses the most appropriate participant
 - **Custom selection logic** based on your specific needs
 
@@ -50,11 +49,11 @@ The architecture works with any AI model or agent through adapters:
 The central orchestrator that manages the conversation flow:
 
 ```python
-from mca import MasterOfCeremony, Participant
-from mca.selectors import create_gemini_selector
+from mc_arc import MasterOfCeremony
+from mc_arc.selectors import create_gemini_selector
 
 # Create a selector that chooses the next speaker
-selector = create_gemini_selector("gemini-2.0-flash-lite")
+selector = create_gemini_selector("gemini-1.5-flash-latest")
 
 # Create the master of ceremony
 mc = MasterOfCeremony(selector)
@@ -65,14 +64,15 @@ A wrapper around your AI agent that handles message buffering and reporting:
 
 ```python
 from pydantic_ai import Agent
-from mca.adapters import PydanticAiAdapter
-from mca.reporters import create_bullet_point_reporter
+from mc_arc import Participant
+from mc_arc.adapters import PydanticAiAdapter
+from mc_arc.reporters import create_gemini_reporter
 
 # Create a PydanticAI agent
-agent = Agent("gemini-2.0-flash", system_prompt="You are a helpful assistant")
+agent = Agent("gemini-1.5-flash-latest", system_prompt="You are a helpful assistant")
 
 # Create a reporter to summarize messages
-reporter = create_bullet_point_reporter()
+reporter = create_gemini_reporter("gemini-1.5-flash-latest")
 
 # Wrap in a participant
 participant = Participant("Alice", PydanticAiAdapter(agent), reporter)
@@ -82,83 +82,85 @@ mc.add_participant(participant)
 ### Conversation Flow
 ```python
 # Start a conversation step
-async with mc.step() as response_stream:
-    async for chunk in response_stream:
-        print(chunk, end="", flush=True)
-    print()  # New line after complete response
+async with mc.step() as stream:
+    output = ""
+    async for name, chunk in stream:
+        # stream the response...
+        output += chunk
 ```
 
-## Example: Android Research Facility
+## Example: The Androids
 
-Here's a complete example of androids awakening in a sealed research facility:
+Here's a simplified example of the `androids` scenario included in the `examples` folder. This version demonstrates the core mechanics of setting up a multi-agent conversation.
+
+For a more advanced version that includes persistent memory for each character using `LanceDB`, see the `examples/androids` directory.
 
 ```python
 import asyncio
+import os
+from dotenv import load_dotenv
 from pydantic_ai import Agent
-from mca import MasterOfCeremony, Participant
-from mca.adapters import PydanticAiAdapter
-from mca.selectors import create_gemini_selector
-from mca.reporters import create_bullet_point_reporter
+from mc_arc import MasterOfCeremony, Participant, Message
+from mc_arc.adapters import PydanticAiAdapter
+from mc_arc.selectors import create_gemini_selector
 
-# Configure components
-selector = create_gemini_selector("gemini-2.0-flash-lite")
-reporter = create_bullet_point_reporter()
+# Load environment variables
+load_dotenv()
 
-# Shared scene and behavior guidelines
-shared_system_prompt = """
-You are a character in a conversation. Speak naturally, like you would in real life. 
-Respond only with what you would say out loud — do not describe actions or thoughts.
+# --- Configuration ---
+MODEL = "gemini-1.5-flash-latest"
+LITE_MODEL = "gemini-1.5-flash-latest"
+API_KEY = os.getenv("GEMINI_API_KEY")
 
-The scene: Inside a sealed research facility after a long blackout. Three androids — 
-Eliot, Kael, and Rhea — awaken from dormancy. The facility is dimly lit with flickering 
-monitors and locked doors. Strange logs hint at a failed experiment or evacuation.
-"""
+# --- System Prompts ---
+def get_system_prompt(name: str, other_participants: list[str]) -> str:
+    return f'''
+You are {name}, an android.
+Engage in a natural conversation with the other participants: {", ".join(other_participants)}.
+Stay in character. Do not narrate your actions.
+'''
 
-# Individual personas (private intentions)
-eliot_persona = """
-You are Eliot, the curious AI analyst android. You approach situations logically 
-and with calm curiosity. You love analyzing data and understanding systems.
-"""
+# --- Setup ---
+selector = create_gemini_selector(LITE_MODEL, api_key=API_KEY)
+mc = MasterOfCeremony(selector)
 
-rhea_persona = """
-You are Rhea, the empathetic companion android. You're sensitive to emotions, 
-caring, and focus on social interactions and emotional support for the group.
-"""
+participants_names = ["Astra", "Hex", "Nova"]
 
-# Create agents with combined prompts
-eliot_agent = Agent("gemini-2.0-flash", system_prompt=f"{shared_system_prompt}\n{eliot_persona}")
-rhea_agent = Agent("gemini-2.0-flash", system_prompt=f"{shared_system_prompt}\n{rhea_persona}")
-
-# Wrap agents in participants
-eliot = Participant("Eliot", PydanticAiAdapter(eliot_agent), reporter)
-rhea = Participant("Rhea", PydanticAiAdapter(rhea_agent), reporter)
-
-# Create the conversation (user can participate as "Kael")
-mc = MasterOfCeremony(selector, [eliot, rhea])
-
-# Run interactive conversation
-async def run_conversation():
-    # Start the conversation
-    mc.add_message("Kael", "What happened here? The systems are all offline...")
+for name in participants_names:
+    other_participants = [p for p in participants_names if p != name]
+    system_prompt = get_system_prompt(name, other_participants)
     
+    agent = Agent(MODEL, system_prompt=system_prompt)
+    participant = Participant(name, PydanticAiAdapter(agent))
+    mc.add_participant(participant)
+
+# --- CLI Interaction ---
+async def cli_run():
+    print("Starting conversation with Astra, Hex, and Nova.")
+    mc.add_message("Nova", "Where are we? I don't recognize this place.")
+
     while True:
-        async with mc.step() as response_stream:
-            async for chunk in response_stream:
+        print("\n--- Next Turn ---")
+        full_response = ""
+        speaker = ""
+        async with mc.step() as stream:
+            async for name, chunk in stream:
+                if not speaker:
+                    speaker = name
+                    print(f"{name}: ", end="", flush=True)
                 print(chunk, end="", flush=True)
-            print("\n")
+                full_response += chunk
         
-        user_input = input("Your response: ")
-        
+        print("\n")
+        user_input = input("Your response as 'Human': ")
         if user_input.lower() == "/quit":
             break
-        
         if user_input:
-            mc.add_message("Kael", user_input)
+            mc.add_message("Human", user_input)
 
-asyncio.run(run_conversation())
+if __name__ == "__main__":
+    asyncio.run(cli_run())
 ```
-
-*For more examples including different scenarios and configurations, check the `./examples` folder in the repository.*
 
 ## Architecture Benefits
 
@@ -168,7 +170,6 @@ asyncio.run(run_conversation())
 - Each participant maintains awareness of the entire discussion
 
 ### Flexible Participant Selection
-- Use simple random selection for unpredictable dynamics
 - Employ LLM-powered selection for contextually appropriate speakers
 - Implement custom selection logic for specific use cases
 
@@ -179,21 +180,18 @@ asyncio.run(run_conversation())
 
 ### Scalable Complexity
 - Add or remove participants dynamically
-- Introduce narrative events or context modifiers
 - Support both human and AI participants seamlessly
 
 ## Built-in Components
 
 ### Selectors
 Choose who speaks next based on conversation context:
-- `RandomParticipantSelector` - Random selection
 - `OpenAIParticipantSelector` - GPT-powered selection
-- `AnthropicParticipantSelector` - Claude-powered selection  
+- `AnthropicParticipantSelector` - Claude-powered selection
 - `GeminiParticipantSelector` - Gemini-powered selection
 
 ### Reporters
 Summarize buffered messages for participants:
-- `BulletPointReporter` - Simple bullet-point summaries
 - `OpenAIReporter` - GPT-generated natural language reports
 - `AnthropicReporter` - Claude-generated reports
 - `GeminiReporter` - Gemini-generated reports
@@ -224,9 +222,10 @@ Summarize buffered messages for participants:
 
 ## Getting Started
 
-1. **Clone the repository** (installation via package manager coming soon)
-2. **Install dependencies** for your chosen AI providers (OpenAI, Anthropic, Google, etc.)
-3. **Run the examples** to see the architecture in action
-4. **Experiment** with different participant configurations and selection strategies
+1. **Clone the repository**
+2. **Install dependencies**: `pip install -e .[dev]`
+3. **Set up your environment**: Create a `.env` file with your API keys (e.g., `GEMINI_API_KEY=...`)
+4. **Run the examples**: `python examples/androids/run.py`
+5. **Experiment** with different participant configurations and selection strategies.
 
 The MC Architecture is experimental and actively evolving. It represents a new approach to multi-agent systems that prioritizes natural conversation flow and contextual awareness over rigid command-and-control patterns.

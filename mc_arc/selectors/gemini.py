@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 from google.genai import types
 from .base import AbstractParticipantSelector
 
@@ -21,9 +20,7 @@ class GeminiParticipantSelector(AbstractParticipantSelector):
 
 
 def create_gemini_selector(
-    model: str = "gemini-2.0-flash",
-    api_key: Optional[str] = None,
-    max_messages: int = 10,
+    model: str = "gemini-2.0-flash", api_key: str | None = None, max_messages: int = 10
 ):
     """Factory function that creates client and selector together."""
     try:

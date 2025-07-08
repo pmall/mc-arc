@@ -30,4 +30,4 @@ class StreamingResponse:
             yield (self.name, chunk_to_send)
 
     def get_full_response(self) -> str:
-        return self.full_response
+        return self.full_response.strip()

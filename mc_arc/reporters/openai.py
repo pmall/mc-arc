@@ -1,4 +1,3 @@
-from typing import Optional
 from .base import AbstractReporter
 
 
@@ -15,7 +14,7 @@ class OpenAIReporter(AbstractReporter):
 
 def create_openai_reporter(
     model: str = "gpt-4",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     temperature: float = 0.2,
     max_messages: int = 100,
 ):
@@ -33,7 +32,7 @@ def create_openai_reporter(
 
 def create_openrouter_reporter(
     model: str,
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
     temperature: float = 0.2,
     max_messages: int = 100,
 ):

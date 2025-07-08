@@ -1,11 +1,10 @@
+import os
 import asyncio
 from dotenv import load_dotenv
 from pydantic_ai import Agent
-from mc_arc import MasterOfCeremony, Participant
+from mc_arc import MasterOfCeremony, Participant, Message
 from mc_arc.adapters import PydanticAiAdapter
 from mc_arc.selectors import create_gemini_selector
-from mc_arc.reporters import create_bullet_point_reporter
-from shared import cli_run
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,7 +15,6 @@ lite_model = "gemini-2.0-flash-lite"
 
 # Configure components
 selector = create_gemini_selector(lite_model)
-reporter = create_bullet_point_reporter()
 
 # Shared scene description and per-agent personas (placeholders)
 shared_system_prompt = """
@@ -57,8 +55,8 @@ eliot_agent = Agent(model=model, system_prompt=eliot_system_prompt)
 rhea_agent = Agent(model=model, system_prompt=rhea_system_prompt)
 
 # Create participants.
-eliot = Participant("Eliot", PydanticAiAdapter(eliot_agent), reporter)
-rhea = Participant("Rhea", PydanticAiAdapter(rhea_agent), reporter)
+eliot = Participant("Eliot", PydanticAiAdapter(eliot_agent))
+rhea = Participant("Rhea", PydanticAiAdapter(rhea_agent))
 
 # Configure the MC.
 mc = MasterOfCeremony(selector, [eliot, rhea])
@@ -67,9 +65,38 @@ mc = MasterOfCeremony(selector, [eliot, rhea])
 color_codes = {"Eliot": "\033[96m", "Rhea": "\033[95m", "Kael": "\033[92m"}
 
 
-def main():
-    asyncio.run(cli_run(mc, "Kael", color_codes))
+async def cli_run(mc: MasterOfCeremony, player: str):
+    reset = "\033[0m"
+
+    def out_line(name: str, content: str):
+        print(f"{color_codes[name]}💬 {name}:{reset} {content.strip()}")
+
+    def clear(timeline: list[Message]):
+        os.system("clear" if os.name == "posix" else "cls")
+        for message in timeline:
+            out_line(message.name, message.content)
+
+    while True:
+        async with mc.step() as stream:
+            output = ""
+            async for name, chunk in stream:
+                for char in list(chunk):
+                    output += char
+                    clear(mc.timeline)
+                    out_line(name, output.strip())
+
+                    await asyncio.sleep(0.01)
+
+        clear(mc.timeline)
+
+        user_input = input("Your response (/quit to quit): ")
+
+        if user_input.lower() == "/quit":
+            break
+
+        if user_input:
+            mc.add_message(player, user_input)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(cli_run(mc, "Kael"))
